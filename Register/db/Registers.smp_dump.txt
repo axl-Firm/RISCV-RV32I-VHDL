@@ -1,0 +1,8 @@
+
+State Machine - |Processor|sequenceur_PC:sequenceur|etat
+Name etat.ECRITURE_PC etat.LECTURE_REG etat.CHARG_IR etat.LECTURE_MEM etat.CHARGEMENT_PGR 
+etat.CHARGEMENT_PGR 0 0 0 0 0 
+etat.LECTURE_MEM 0 0 0 1 1 
+etat.CHARG_IR 0 0 1 0 1 
+etat.LECTURE_REG 0 1 0 0 1 
+etat.ECRITURE_PC 1 0 0 0 1 

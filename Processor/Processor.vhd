@@ -42,7 +42,7 @@ architecture com of Processor is
 	signal funct7_int : std_logic_vector(6 downto 0);
 	signal funct3_int : std_logic_vector(2 downto 0);
 	signal rd_int, rs1_int, rs2_int : std_logic_vector(4 downto 0);
-	signal add_int, sub_int, and_int, or_int, xor_int : std_logic;
+	signal add_int, sub_int, and_int, or_int, xor_int, srl_int,sll_int,slt_int : std_logic;
 	signal out_data1,out_data2,in_data_ALU : std_logic_vector (31 downto 0);
 	signal ALU_decode : std_logic_vector (2 downto 0); 
 	signal r_w,r_w_b,chip_en_b,en_PC,chip_en,IR_en : std_logic;
@@ -59,7 +59,10 @@ architecture com of Processor is
 			sub_int ='1'else "010" when 
 			or_int ='1'else "011" when 
 			and_int ='1'else "100" when 
-			xor_int ='1'else "111";
+			xor_int ='1'else "101" when 
+			sll_int ='1' else "110" when 
+			slt_int ='1' else "111" when srl_int ='1'
+			else "000";
 			
 		Program_counter : entity work.PC (stack_counter)
 			port map (

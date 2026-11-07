@@ -22,14 +22,29 @@ end entity tb;
 architecture simulation of tb is
 
     constant T_CLK : time := 20 ns;
-    constant NB_INSTRUCTIONS : positive := 5;
+    constant NB_INSTRUCTIONS : positive := 8;
 
     constant programme : type_mem := (
-        0 => x"002081B3", -- ADD x3, x1, x2 : 5 + 3   = 8
-        1 => x"40208233", -- SUB x4, x1, x2 : 5 - 3   = 2
-        2 => x"0020E2B3", -- OR  x5, x1, x2 : 5 OR 3  = 7
-        3 => x"0020F333", -- AND x6, x1, x2 : 5 AND 3 = 1
-        4 => x"0020C3B3", -- XOR x7, x1, x2 : 5 XOR 3 = 6
+        0 => x"002081B3", -- ADD x3,  x1, x2
+        1 => x"40208233", -- SUB x4,  x1, x2
+        2 => x"0020E2B3", -- OR  x5,  x1, x2
+        3 => x"0020F333", -- AND x6,  x1, x2
+        4 => x"0020C3B3", -- XOR x7,  x1, x2
+        5 => x"00209433", -- SLL x8,  x1, x2
+        6 => x"0020A4B3", -- SLT x9,  x1, x2
+        7 => x"0020D533", -- SRL x10, x1, x2
+        others => (others => '0')
+    );
+
+    constant resultats : type_mem := (
+        0 => x"00000008",
+        1 => x"00000002",
+        2 => x"00000007",
+        3 => x"00000001",
+        4 => x"00000006",
+        5 => x"00000028",
+        6 => x"00000000",
+        7 => x"00000000",
         others => (others => '0')
     );
 
@@ -48,7 +63,6 @@ architecture simulation of tb is
     signal next_PC         : std_logic_vector(31 downto 0);
     signal out_PC          : std_logic_vector(31 downto 0);
 
-    -- Reperes pour les chronogrammes
     signal resultat_attendu : std_logic_vector(31 downto 0)
         := (others => '0');
 
@@ -95,7 +109,7 @@ begin
         end procedure;
 
     begin
-        -- Reset : initialise notamment x1 et x2
+        -- Reset : le banc de registres doit fournir x1=5 et x2=3.
         cycle;
         cycle;
 
@@ -104,12 +118,9 @@ begin
             severity failure;
 
         reset <= '0';
-
-        -- Programme deja present dans Imem via le generic.
-        -- Attendre un cycle apres la liberation du reset.
         cycle;
 
-        -- Passage de CHARGEMENT_PGR a CHARG_IR
+        -- Entree dans CHARG_IR.
         start_exe <= '1';
         cycle;
         start_exe <= '0';
@@ -117,9 +128,9 @@ begin
         for i in 0 to NB_INSTRUCTIONS - 1 loop
 
             numero_calcul <= i + 1;
+            resultat_attendu <= resultats(i);
 
             -- Cycle 1 : capture de l'instruction dans IR.
-            -- La lecture d'Imem est asynchrone.
             cycle;
 
             assert instruction_out = programme(i)
@@ -127,36 +138,24 @@ begin
                        & integer'image(i)
                 severity failure;
 
-            -- Cycle 2 : lecture des registres sources
+            -- Cycle 2 : lecture des registres sources.
             cycle;
 
-            case i is
-                when 0 =>
-                    resultat_attendu <= x"00000008";
-                when 1 =>
-                    resultat_attendu <= x"00000002";
-                when 2 =>
-                    resultat_attendu <= x"00000007";
-                when 3 =>
-                    resultat_attendu <= x"00000001";
-                when 4 =>
-                    resultat_attendu <= x"00000006";
-                when others =>
-                    null;
-            end case;
-
-            -- Cycle 3 : ecriture du resultat et mise a jour du PC
+            -- Cycle 3 : ecriture du resultat et mise a jour du PC.
             cycle;
 
             assert unsigned(out_PC) =
                    to_unsigned((i + 1) * 4, 32)
-                report "ERREUR : PC incorrect apres le calcul "
+                report "ERREUR : PC incorrect apres l'instruction "
                        & integer'image(i + 1)
                 severity failure;
 
         end loop;
 
-        report "FIN : verifier les cinq resultats ALU dans les chronogrammes"
+        report "FIN : huit instructions et progression du PC verifiees."
+            severity note;
+
+        report "Verifier les resultats ALU et les registres dans les chronogrammes."
             severity note;
 
         fin <= true;

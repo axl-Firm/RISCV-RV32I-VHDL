@@ -67,7 +67,7 @@ signal sfunct3 : std_logic_vector(2 downto 0);
 		
 		cond_add <= (sop_code = "0110011" and sfunct3 = "000" and sfunct7 = "0000000");
 		cond_sub <= (sop_code = "0110011" and sfunct3 = "000" and sfunct7 = "0100000");
-		cond_and <= (sop_code = "0110011" and sfunct3 = "111" and sfunct7 = "0100000");
+		cond_and <= (sop_code = "0110011" and sfunct3 = "111" and sfunct7 = "0000000");
 		cond_or <= (sop_code = "0110011" and sfunct3 = "110" and sfunct7 = "0000000");
 		cond_xor <= (sop_code = "0110011" and sfunct3 = "100" and sfunct7 = "0000000");
 		cond_sll <= (sop_code = "0110011" and sfunct3 = "001" and sfunct7 = "0000000");

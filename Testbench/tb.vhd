@@ -1,6 +1,20 @@
+---------------------------------------------
+--
+-- Company : University of Lorraine
+-- Student engineer : axel thibaut TEUWEUSSIE
+--
+-- Design name : tb
+-- Module name : tb - simulation
+-- Project Name : Microprocessor RISCV RV32I
+-- Target device : MAX 10
+--
+---------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+
+use work.pkg.all;
 
 entity tb is
 end entity tb;
@@ -8,16 +22,15 @@ end entity tb;
 architecture simulation of tb is
 
     constant T_CLK : time := 20 ns;
+    constant NB_INSTRUCTIONS : positive := 5;
 
-    type programme_type is array (0 to 4) of
-        std_logic_vector(31 downto 0);
-
-    constant programme : programme_type := (
-        x"002081B3", -- ADD x3, x1, x2 : 5 + 3   = 8
-        x"40208233", -- SUB x4, x1, x2 : 5 - 3   = 2
-        x"0020E2B3", -- OR  x5, x1, x2 : 5 OR 3  = 7
-        x"0020F333", -- AND x6, x1, x2 : 5 AND 3 = 1
-        x"0020C3B3"  -- XOR x7, x1, x2 : 5 XOR 3 = 6
+    constant programme : type_mem := (
+        0 => x"002081B3", -- ADD x3, x1, x2 : 5 + 3   = 8
+        1 => x"40208233", -- SUB x4, x1, x2 : 5 - 3   = 2
+        2 => x"0020E2B3", -- OR  x5, x1, x2 : 5 OR 3  = 7
+        3 => x"0020F333", -- AND x6, x1, x2 : 5 AND 3 = 1
+        4 => x"0020C3B3", -- XOR x7, x1, x2 : 5 XOR 3 = 6
+        others => (others => '0')
     );
 
     signal clk       : std_logic := '0';
@@ -35,27 +48,30 @@ architecture simulation of tb is
     signal next_PC         : std_logic_vector(31 downto 0);
     signal out_PC          : std_logic_vector(31 downto 0);
 
-    -- Repere visible dans les chronogrammes
+    -- Reperes pour les chronogrammes
     signal resultat_attendu : std_logic_vector(31 downto 0)
         := (others => '0');
 
-    signal numero_calcul : integer range 0 to 5 := 0;
+    signal numero_calcul : integer range 0 to NB_INSTRUCTIONS := 0;
     signal fin : boolean := false;
 
 begin
 
     DUT : entity work.Processor(com)
-    port map (
-        clk             => clk,
-        reset           => reset,
-        pgr_valid       => pgr_valid,
-        start_exe       => start_exe,
-        next_PC         => next_PC,
-        out_PC          => out_PC,
-        instruction_in  => instruction_in,
-        instruction_out => instruction_out,
-        prog_addr       => prog_addr
-    );
+        generic map (
+            init_pgr => programme
+        )
+        port map (
+            clk             => clk,
+            reset           => reset,
+            pgr_valid       => pgr_valid,
+            start_exe       => start_exe,
+            next_PC         => next_PC,
+            out_PC          => out_PC,
+            instruction_in  => instruction_in,
+            instruction_out => instruction_out,
+            prog_addr       => prog_addr
+        );
 
     horloge : process
     begin
@@ -79,7 +95,7 @@ begin
         end procedure;
 
     begin
-        -- Reset : initialise aussi x1 et x2
+        -- Reset : initialise notamment x1 et x2
         cycle;
         cycle;
 
@@ -89,31 +105,21 @@ begin
 
         reset <= '0';
 
-        -- Chargement des cinq instructions
-        for i in programme'range loop
-            prog_addr <= std_logic_vector(to_unsigned(i, 4));
-            instruction_in <= programme(i);
-            pgr_valid <= '1';
-
-            cycle;
-        end loop;
-
-        pgr_valid <= '0';
+        -- Programme deja present dans Imem via le generic.
+        -- Attendre un cycle apres la liberation du reset.
         cycle;
 
-        -- Passage de CHARGEMENT_PGR a LECTURE_MEM
+        -- Passage de CHARGEMENT_PGR a CHARG_IR
         start_exe <= '1';
         cycle;
         start_exe <= '0';
 
-        for i in programme'range loop
+        for i in 0 to NB_INSTRUCTIONS - 1 loop
 
             numero_calcul <= i + 1;
 
-            -- Front de lecture de la memoire
-            cycle;
-
-            -- Front de chargement de IR
+            -- Cycle 1 : capture de l'instruction dans IR.
+            -- La lecture d'Imem est asynchrone.
             cycle;
 
             assert instruction_out = programme(i)
@@ -121,8 +127,7 @@ begin
                        & integer'image(i)
                 severity failure;
 
-            -- Front de lecture de x1 et x2 :
-            -- les entrees ALU deviennent 5 et 3
+            -- Cycle 2 : lecture des registres sources
             cycle;
 
             case i is
@@ -140,7 +145,7 @@ begin
                     null;
             end case;
 
-            -- Front d'ecriture du resultat et de PC + 4
+            -- Cycle 3 : ecriture du resultat et mise a jour du PC
             cycle;
 
             assert unsigned(out_PC) =

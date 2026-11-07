@@ -23,7 +23,7 @@ entity sequenceur_PC is
 end sequenceur_PC;
 
 architecture sequence of sequenceur_PC is 
-	type state is (CHARGEMENT_PGR,LECTURE_MEM, CHARG_IR,LECTURE_REG,ECRITURE_PC);
+	type state is (CHARGEMENT_PGR, CHARG_IR,LECTURE_REG,ECRITURE_PC);
 	signal etat,etat_s : state; 
 	
 	begin 
@@ -52,11 +52,9 @@ architecture sequence of sequenceur_PC is
 							if pgr_valid = '1' and start_exe = '0' then
 							chip_en <= '1';
 							end if;
-					elsif etat = LECTURE_MEM then 
-						chip_en <= '1';
-						r_w <= '1';
 					elsif etat = CHARG_IR then 
 						IR_en <= '1';
+						chip_en <= '1';
 						r_w <= '1';
 					elsif etat = LECTURE_REG then 
 						chip_en_b <= '1'; r_w_b <= '1';
@@ -70,18 +68,16 @@ architecture sequence of sequenceur_PC is
 				case etat is 
 					when CHARGEMENT_PGR => 
 						if start_exe = '1' then
-							etat_s <= LECTURE_MEM;
+							etat_s <= CHARG_IR;
 						else
 							etat_s <= CHARGEMENT_PGR;
 						end if;
-					when LECTURE_MEM => 
-						etat_s <= CHARG_IR;
 					when CHARG_IR =>
 						etat_s <= LECTURE_REG; 
 					when LECTURE_REG => 
 						etat_s <= ECRITURE_PC;
 					when ECRITURE_PC => 
-						etat_s <= LECTURE_MEM;
+						etat_s <= CHARG_IR;
 				end case;
 		end process P3;
 end sequence;	

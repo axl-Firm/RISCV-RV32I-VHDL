@@ -15,7 +15,14 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.pkg.all;
+
 entity Processor is 
+
+	generic (
+		init_pgr : type_mem := (others =>(others =>'0')) 
+		);
+		
 	port (
 		clk,reset,pgr_valid, start_exe : in std_logic;
 		next_PC,out_PC : out std_logic_vector (31 downto 0);
@@ -25,7 +32,8 @@ entity Processor is
 		);
 end Processor ;
 
-architecture com of Processor is 
+architecture com of Processor is
+
 	signal next_PC_in : std_logic_vector (31 downto 0);
 	signal out_PC_in : std_logic_vector (31 downto 0);
 	signal instruc_in : std_logic_vector (31 downto 0);
@@ -63,11 +71,16 @@ architecture com of Processor is
 				);
 				
 		Instruction_memory : entity work.Imem (mem)
+			
+			generic map (
+				init_pgr => init_pgr
+				)
+			
 			port map (
 				clk => clk,
+				reset => reset,
 				r_w => r_w,
 				chip_en => chip_en,
-				reset => reset,
 				addr => addr_mem,
 				data_in => instruction_in,
 				data_out => out_data_in

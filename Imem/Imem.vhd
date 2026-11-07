@@ -15,9 +15,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity Imem is 
+use work.pkg.all;
+
+entity Imem is
+ 
 generic ( 
-			TAILLE: positive := 16
+			init_pgr : type_mem := (others => (others => '0'))
 	);
 	
 port ( 
@@ -29,21 +32,19 @@ port (
 end Imem;
 
 architecture mem of Imem is 
-	type Imem_array is array (TAILLE-1 downto 0) of std_logic_vector (31 downto 0); 
 
-	signal memo : Imem_array;
-
+	signal memo : type_mem := init_pgr;
+	signal d_out : std_logic_vector (31 downto 0); 
+	
 	begin 
-		
-		process (clk,reset)
+		d_out <= memo (to_integer (unsigned (addr)));
+		data_out <= d_out;
+		process (clk)
 		
 			begin 
-				if (reset ='1') then 
-					data_out <= (others => '0');
-				elsif rising_edge (clk) then 
-					if (chip_en = '1' and r_w='1') then 
-						data_out <= memo (to_integer (unsigned (addr)));
-					elsif (chip_en = '1' and r_w ='0') then 
+				if rising_edge (clk) then 
+				--if (chip_en = '1' and r_w='1') then 
+					if (reset = '0' and chip_en = '1' and r_w ='0') then 
 						memo (to_integer (unsigned (addr))) <= data_in;
 					end if;
 				end if;

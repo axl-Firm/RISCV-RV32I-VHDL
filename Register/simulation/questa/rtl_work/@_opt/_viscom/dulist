@@ -1,0 +1,11 @@
+1 3 pkg 4 fast 90 C:/Users/axelt/Documents/Projets persos/VHDL/Git_micro/Register/simulation/questa/rtl_work 0 80 0 0 7 0
+1 13 sequenceur_pc 8 sequence 90 C:/Users/axelt/Documents/Projets persos/VHDL/Git_micro/Register/simulation/questa/rtl_work 1 65 0 0 90 0
+1 14 register_banks 8 behavior 90 C:/Users/axelt/Documents/Projets persos/VHDL/Git_micro/Register/simulation/questa/rtl_work 1 65 0 0 136 0
+1 9 registers 3 rtl 90 C:/Users/axelt/Documents/Projets persos/VHDL/Git_micro/Register/simulation/questa/rtl_work 1 65 0 0 44 0
+1 2 pc 13 stack_counter 90 C:/Users/axelt/Documents/Projets persos/VHDL/Git_micro/Register/simulation/questa/rtl_work 1 65 0 0 43 0
+1 4 imem 3 mem 90 C:/Users/axelt/Documents/Projets persos/VHDL/Git_micro/Register/simulation/questa/rtl_work 1 65 0 0 62 0
+1 2 ir 5 instr 90 C:/Users/axelt/Documents/Projets persos/VHDL/Git_micro/Register/simulation/questa/rtl_work 1 65 0 0 37 0
+1 2 di 10 behavioral 90 C:/Users/axelt/Documents/Projets persos/VHDL/Git_micro/Register/simulation/questa/rtl_work 1 65 0 0 250 0
+1 3 alu 6 calcul 90 C:/Users/axelt/Documents/Projets persos/VHDL/Git_micro/Register/simulation/questa/rtl_work 1 65 0 0 95 0
+1 9 processor 3 com 90 C:/Users/axelt/Documents/Projets persos/VHDL/Git_micro/Register/simulation/questa/rtl_work 1 65 0 0 398 0
+1 2 tb 10 simulation 90 C:/Users/axelt/Documents/Projets persos/VHDL/Git_micro/Register/simulation/questa/rtl_work 1 65 0 0 274 0

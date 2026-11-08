@@ -2,7 +2,6 @@
 Register/db/
 Register/incremental_db/
 Register/output_files/
-Register/simulation/
 
 # Quartus: local workspace settings
 *.qws

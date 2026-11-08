@@ -18,7 +18,8 @@ use ieee.numeric_std.all;
 entity sequenceur_PC is 
 	port (
 		clk , reset,pgr_valid, start_exe, is_SW : in std_logic;
-		chip_en,r_w,IR_en,chip_en_b,r_w_b,en_PC,mode_chargement,chip_en_d, r_w_d : out std_logic
+		chip_en,r_w,IR_en,chip_en_b,r_w_b,en_PC,mode_chargement,chip_en_d, r_w_d : out std_logic;
+		end_instr : out std_logic
 		);
 		
 end sequenceur_PC;
@@ -32,8 +33,15 @@ architecture sequence of sequenceur_PC is
 			begin 
 				if (reset ='1') then 
 					etat <= CHARGEMENT_PGR;
+					end_instr <= '0';
+					
 				elsif (rising_edge(clk)) then 
 					etat <= etat_s;
+					if etat = ECRITURE_PC then 
+						end_instr <= '1';
+					else 
+						end_instr <= '0';
+					end if;
 				end if;
 		end process P1;
 		

@@ -28,6 +28,7 @@ entity Processor is
 		next_PC,out_PC : out std_logic_vector (31 downto 0);
 		instruction_in: in std_logic_vector(31 downto 0); 
 		instruction_out : out std_logic_vector (31 downto 0);
+		end_instr : out std_logic;
 		prog_addr : in std_logic_vector(3 downto 0)
 		);
 end Processor ;
@@ -160,6 +161,7 @@ architecture com of Processor is
 				 en_PC => en_PC,
 				 r_w_d => r_w_d,
 				 chip_en_d => chip_en_d,
+				 end_instr => end_instr,
 				 is_SW => SW_int 
 				);
 			

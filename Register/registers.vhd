@@ -34,7 +34,7 @@ end entity;
 architecture rtl of registers is 
 signal memo : std_logic_vector(TAILLE-1 downto 0);
 	begin
-	process(clk,reset)
+	process(clk,reset,E_write)
 begin
     if reset = '1'then
 		memo <= (others => '0');

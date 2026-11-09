@@ -24,7 +24,7 @@ generic (
 	);
 	
 port ( 
-		clk,r_w,chip_en,reset : in std_logic;
+		clk,r_w,chip_en,reset,read_imem_en : in std_logic;
 		addr : in std_logic_vector (3 downto 0);
 		data_in : in std_logic_vector(31 downto 0);
 		data_out : out std_logic_vector(31 downto 0)
@@ -37,15 +37,19 @@ architecture mem of Imem is
 	signal d_out : std_logic_vector (31 downto 0); 
 	
 	begin 
-		d_out <= memo (to_integer (unsigned (addr)));
+		
+		d_out <= memo (to_integer (unsigned (addr))) when read_imem_en = '1'
+		else (others => '0');
 		data_out <= d_out;
 		process (clk)
 		
 			begin 
 				if rising_edge (clk) then 
 				--if (chip_en = '1' and r_w='1') then 
-					if (reset = '0' and chip_en = '1' and r_w ='0') then 
-						memo (to_integer (unsigned (addr))) <= data_in;
+					if (reset = '0' and chip_en = '1')then
+						if (r_w ='0') then 
+							memo (to_integer (unsigned (addr))) <= data_in;
+						end if;
 					end if;
 				end if;
 		end process;

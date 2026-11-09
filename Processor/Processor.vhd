@@ -39,14 +39,11 @@ architecture com of Processor is
 	signal out_PC_in : std_logic_vector (31 downto 0);
 	signal instruc_in : std_logic_vector (31 downto 0);
 	signal out_data_in,imms_int : std_logic_vector (31 downto 0);
-	signal op_code_int : std_logic_vector(6 downto 0);
-	signal funct7_int,imm2_int : std_logic_vector(6 downto 0);
-	signal funct3_int : std_logic_vector(2 downto 0);
 	signal rd_int, rs1_int, rs2_int,imm1_int : std_logic_vector(4 downto 0);
 	signal add_int, sub_int, and_int, or_int, xor_int, srl_int,sll_int,slt_int,SW_int : std_logic;
 	signal out_data1,out_data2,in_data_ALU : std_logic_vector (31 downto 0);
 	signal ALU_decode : std_logic_vector (3 downto 0); 
-	signal r_w,r_w_b,r_w_d,chip_en_b,chip_en_d,en_PC,chip_en,IR_en : std_logic;
+	signal r_w,r_w_b,r_w_d,chip_en_b,chip_en_d,en_PC,chip_en,IR_en,read_imem_en : std_logic;
 	signal mode_chargement : std_logic;
 	signal addr_mem : std_logic_vector(3 downto 0);
 	signal alu_in2 : std_logic_vector(31 downto 0);
@@ -89,7 +86,8 @@ architecture com of Processor is
 				chip_en => chip_en,
 				addr => addr_mem,
 				data_in => instruction_in,
-				data_out => out_data_in
+				data_out => out_data_in,
+				read_imem_en => read_imem_en
 				);
 				
 		Instruction_register : entity work.IR (instr)
@@ -104,9 +102,9 @@ architecture com of Processor is
 		Instruction_decoder : entity work.DI (behavioral)
 			port map (
 				in_instruction => instruc_in,
-				op_code => op_code_int, 
-				funct7 => funct7_int,
- 				funct3 => funct3_int,
+				op_code => open, 
+				funct7 => open,
+ 				funct3 => open,
 				rd => rd_int,
 				rs1 => rs1_int,
 				rs2 => rs2_int,
@@ -119,8 +117,8 @@ architecture com of Processor is
 				is_slt => slt_int,
 				is_srl => srl_int,
 				is_SW => SW_int,
-				imm1 => imm1_int,
-				imm2 => imm2_int,
+				imm1 => open,
+				imm2 => open,
 				imms => imms_int
 				);
 			
@@ -162,7 +160,8 @@ architecture com of Processor is
 				 r_w_d => r_w_d,
 				 chip_en_d => chip_en_d,
 				 end_instr => end_instr,
-				 is_SW => SW_int 
+				 is_SW => SW_int,
+				 read_imem_en => read_imem_en
 				);
 			
 		data_memory : entity work.data_mem (Behavior)
